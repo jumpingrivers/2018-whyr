@@ -1,0 +1,274 @@
+---
+title: "Automated Reporting"
+subtitle: "Chapter 1: Shiny Basics Intro"
+author: '`r jrPresentation::get_author()`'
+output:
+  xaringan::moon_reader:
+    css: ["default", "style.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+source("code/knitr_options.R")
+library(jrPresentation)
+```
+
+layout: true
+`r add_border(inverse=FALSE)`
+---
+class: center, middle
+# Overview
+
+---
+
+## Material 
+
+All slides and exercises are in the packages `jrAutomate` and `jrShiny`
+```{r eval=FALSE}
+install.packages("drat")
+drat::addRepo("jr-packages")
+install.packages("jrAutomate")
+install.packages("jrShiny")
+
+help(package = "jrAutomate")
+```
+
+---
+class: center, middle 
+# Chapter 1: What is markdown?
+---
+
+# What is markdown?
+
+  * Markdown: lightweight markup language.
+
+  * Plain and simple
+    * [Github](github.com), wiki's, [stackoverflow](stackoverflow.com)
+
+  * Simple and fast to write
+    * I use it for agendas, minutes & reports
+
+
+---
+
+# R markdown (.Rmd)
+
+  * [R markdown](http://shiny.rstudio.com/articles/rm-cheatsheet.html) is a flavour of markdown 
+    * Embed R code
+
+  * Writing a document is quick
+    * But some flexibility and polish is lost
+  
+---
+
+# Headers
+
+All R markdown files start with a header
+```
+---
+title: "My title"
+author: "Me"
+date: "01 June 2020"
+output: html_document
+---
+```
+
+---
+
+# Header: output
+
+
+  * `html_document` 
+
+  * `pdf_document` - on windows you need [miktex](http://miktex.org/)
+
+  * `word_document`
+
+  * `ioslides_presentation` -- a html format for presentations.
+
+  * `beamer_presentation` -- pdf
+
+---
+
+# R markdown (.Rmd)
+
+
+  * Really easy
+    * This presentation was written in Markdown
+
+  * Start a line with `#` creates a level $1$ header
+    * Surrounding text with `__` will make the text __bold__.
+
+---
+
+# Embedded R code with `knitr`
+
+  * Supports multiple file types including markdown and LaTeX.
+
+  * Allows a mixture of R and markdown
+  
+```{r echo=FALSE}
+knitr::include_graphics("../graphics/knit-logo.png")
+```
+
+---
+
+# Chunks
+
+
+* R code is treated exactly the same as using the normal R GUI interpreter
+ 
+* Variables can be used to store results
+
+* Graphs can be created
+
+* Use routines from various packages
+
+---
+
+# Chunk options
+
+Option name | Value | Effect 
+------------|-------|-------
+`eval` | logical | Whether to evaluate a code chunk 
+`echo` | logical | Whether to include the source code in output
+`include` | logical | Whether to include the chunk results in output 
+`fig.width`, `fig.height` | `numeric` | Dimensions of plots in inches
+
+
+---
+
+# Processing a .Rmd file
+
+  * Using RStudio, click `Knit HTML`
+
+  * Or at the command line 
+  
+```{r eval = FALSE}
+rmarkdown::render("file.Rmd")
+```
+
+---
+
+layout: true
+`r add_border(inverse=FALSE)`
+---
+
+class: center, middle 
+# `htmlwidgets`
+---
+
+## htmlwidgets
+
+```{r echo=FALSE, message=FALSE, out.width="90%"}
+# initiate a 100 x 3 matrix filled with zeros
+m <- matrix(numeric(300), ncol = 3)
+# simulate a 3D random-walk
+for (i in 2:100) m[i, ] <- m[i-1, ] + rnorm(3)
+# collect everything in a data-frame
+df <- setNames(
+  data.frame(m, seq(1, 100)),
+  c("x", "y", "z", "time")
+)
+library(plotly)
+plot_ly(data=df, x = ~x, y = ~y, z = ~z, color = ~time, type = "scatter3d")
+```
+
+---
+
+## htmlwidgets
+```{r echo=FALSE, message=FALSE, out.width="90%"}
+library(plotly)
+data("diamonds", package="ggplot2")
+d <- diamonds[sample(nrow(diamonds), 500), ]
+d$clarity = paste("Clarity:", d$clarity)
+plot_ly(d, x = ~carat, y = ~price, text = ~clarity,
+        mode = "markers", color = ~carat, size = ~carat)
+```
+
+---
+
+## htmlwidgets
+
+* Used just like conventional R plots;
+
+* Included in R Markdown documents;
+
+* Incorporated into shiny web applications.
+
+* Using an existing R html widgets requires very little code. 
+
+---
+
+layout: true
+`r add_border(inverse=FALSE)`
+
+---
+
+class:center,middle
+# `flexdashboard`
+---
+
+## flexdashboard: Dashboard creation
+
+  * Interactive JavaScript data visualisations based on htmlwidgets.
+
+  * R graphical output including base, lattice, and grid graphics.
+
+  * Tabular data (with optional sorting, filtering, and paging).
+
+  * Value boxes for highlighting important summary data.
+
+  * Gauges for displaying values on a meter within a specified range
+
+  * Text annotations of various kinds.
+
+---
+
+## Layouts
+
+The `flexdashboard` package makes it easy to create dashboards. 
+  
+   * Single column (fill and scrolling);
+   * Rows;
+   * Multiple columns;
+   * Tabs;
+   * Pages.
+  
+New chart panes are created using `###` and new columns (or rows) are created using `------------------`
+
+---
+
+## Sizing
+  
+ * We can also change the sizes of dashboard panes.
+
+ * If no size  attributes are specified then each chart size is relative to it's
+    `knit`
+
+ * To specify the size, we use the `data-width` and `data-height` attributes to rows, columns, or even individual
+    charts.
+
+ * These attributes establish the _relative_ size
+    between charts laid out in the same dimension.
+
+
+---
+
+class:center,middle
+# Homework Exercises
+
+---
+
+## Exercises
+
+```{r eval=FALSE}
+vignette("chapter1", package="jrAutomate")
+vignette("chapter2", package="jrAutomate"
+vignette("chapter3", package="jrAutomate")
+```
+

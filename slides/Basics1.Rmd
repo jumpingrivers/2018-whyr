@@ -10,28 +10,6 @@ runtime: shiny
 %\VignetteIndexEntry{Chapter 4 Slides}
 -->
 
-# Setup
-## Setup
-
-Please do the following:
-
-Basics:
-
-```{r eval=FALSE}
-install.packages("drat")
-drat::addRepo("jr-packages")
-install.packages("jrShiny")
-
-# start a new Rstudio project (optional)
-jrShiny::create_project()
-```
-
-You should see two new directories `exercises` and `original`. We will work on `exercises` leaving original as a reference.
-
-Advanced:
-
-Download or clone the repostiory - 
-
 ```{r echo=FALSE, message=FALSE}
 library(shiny)
 data(movies, package="jrShiny")
