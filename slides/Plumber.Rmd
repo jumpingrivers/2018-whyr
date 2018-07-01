@@ -1,0 +1,287 @@
+---
+title: "Plumber"
+subtitle: "How to integrate R with other technologies"
+author: '`r jrPresentation::get_author()`'
+output:
+  xaringan::moon_reader:
+    css: ["default", "style.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, message=FALSE}
+options(htmltools.dir.version = FALSE)
+library("jrPresentation")
+set_presentation_options()
+```
+
+
+layout: false
+`r add_border(inverse = TRUE)`
+
+---
+
+# Expose R to other people/things
+
+.pull-left[
+
+## Who needs plumber?
+
+  - Reporting, Automated Reporting
+  
+  - Publishing, Web Publishing
+  
+  - Building systems/software
+
+]
+
+.pull-right[
+
+  ![friends](assets/friends.jpg)
+
+]
+
+---
+
+# Expose R to other people/things
+
+.pull-left[
+
+## Who needs plumber?
+
+  - ~~Reporting, Automated Reporting~~
+  
+  - ~~Publishing, Web Publishing~~
+  
+  - Building systems/software
+]
+
+.pull-right[
+
+  ![friends](assets/friends.jpg)
+
+]
+
+---
+
+# Expose R to other people/things
+
+
+.pull-left[
+
+- Web/Dashboard integrations
+  
+- App developers
+
+- DataBase Developers
+  
+- Data Scientists
+  
+- Other back-end systems
+
+- And so on...
+
+]
+
+.pull-right[
+
+  ![friends](assets/friends.jpg)
+
+]
+
+---
+
+layout: true
+`r add_border(inverse=TRUE)`
+
+---
+
+# One option: A REST API
+
+`www.some-address.de/some-functionality?with-parameters`
+
+Examples:
+
+`https://duckduckgo.com/?q=hamburg+R+user+group`
+
+`https://www.imdb.com/find?q=batman&s=tt`
+
+---
+
+# `plumber` to the rescue
+
+  - Creates a REST API
+  
+  - No specialist knowledge required to get started
+  
+  - Very easy to adapt existing code
+  
+  - Great documentation: https://www.rplumber.io/
+  
+Follow development:
+
+Jeff Allen: https://github.com/trestletech/plumber
+
+Rstudio: https://github.com/rstudio/plumber
+
+---
+
+# 3 easy steps
+
+  - 1: Write function
+  
+  ```{r, eval = FALSE}
+  silly = function(stuff) {
+    print(stuff)
+  }
+  ```
+
+---
+
+# 3 easy steps
+
+  - 2: Add special comments
+
+  ```{r, eval = FALSE}
+  library(plumber)
+  
+  @get /silly
+  silly = function(stuff) {
+    print(stuff)
+  }
+  ```
+
+---
+
+# 3 easy steps
+
+  - 3: Serve
+
+```{r, eval = FALSE}
+  library(plumber)
+  
+  p = plumb(dir = "api")
+  p$run(port = 8000)
+  ```
+
+---
+
+class: center, middle inverse
+
+# Your Turn
+  ## github.com/rmnppt/plumber-tutorial
+
+---
+
+# My use cases
+
+  - Providing forecasting interface for disease outbreak detection.
+  
+  - Providing recommendation algorithm for business.
+  
+  - Exposing SEO algorithms for marketing developers.
+
+---
+
+# Deployment Basic
+
+  - Start with built in digital ocean method*
+  
+  - Entry point $5 per month
+  
+  - `plumber::do_deploy_api`
+
+```{r echo=FALSE, out.width="200px"}
+knitr::include_graphics("assets/rage1.jpg")
+```
+
+.footnote[[*] Plumber Docs https://www.rplumber.io/docs/hosting.html]
+
+---
+
+# Deployment Advanced
+
+  - install web server manually and configure resources (Docker Compose or pm2)*
+  
+  - multiple R processes running concurrently
+  
+  - harder to do but more scaleable
+
+```{r echo=FALSE, out.width="250px"}
+knitr::include_graphics("assets/rage2.jpg")
+```
+
+.footnote[[*] Plumber Docs https://www.rplumber.io/docs/hosting.html]
+
+---
+  
+# Deployment Experimental
+
+  - Configure app engine on Google Cloud Compute*
+  
+  - Harder, less support but most scaleable and fully managed
+
+```{r echo=FALSE, out.width="300px"}
+knitr::include_graphics("assets/rage3.png")
+```
+
+.footnote[[*] Mark Edmonson https://github.com/MarkEdmondson1234/serverless-R-API-appengine]
+
+---
+
+class: center, middle inverse
+
+# Accessing an API with `library(httr)`
+
+---
+
+# Getting bitcoin price
+
+```{r}
+url = "https://api.gdax.com/products/BTC-GBP/candles"
+results = httr::GET(url)
+httr::content(results)[[1]]
+```
+
+---
+
+class: center, middle inverse
+
+# Your Turn
+
+---
+
+# Task
+
+1. Browse the internet for an API that you would like to use. 
+    - app.swaggerhub.com
+    - www.programmableweb.com
+
+2. Use `httr::GET()` and `httr::content()` to make some calls.
+
+---
+
+# Appendix
+
+  - Who is https://www.blockspring.com/ ?
+  
+  - How could you forget! [R Studio Connect](https://www.rstudio.com/products/connect/)
+  
+  - What about [Apple Core ML](https://developer.apple.com/documentation/coreml) or [Google ML Kit](https://developers.google.com/ml-kit/)
+
+ - Others including (Microsoft/Azure, H2o Steam, Fiery, AWS/Lambda)
+
+---
+
+# Get started
+
+  - github.com/rmnppt/plumber-tutorial
+  
+  - www.rplumber.io
+  
+---

@@ -1,0 +1,8 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+/slides/*_cache/
+/slides/*_files/
+/slides/*.html

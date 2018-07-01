@@ -1,0 +1,239 @@
+---
+title: "Futures and Promises"
+subtitle: ""
+author: '`r jrPresentation::get_author()`'
+output:
+  xaringan::moon_reader:
+    css: ["default", "style.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, message=FALSE}
+options(htmltools.dir.version = FALSE)
+library("jrPresentation")
+set_presentation_options()
+```
+
+layout: true
+`r add_border(inverse=FALSE)`
+---
+
+# Intro
+
+- R is *single* *threaded*
+
+- We can only perform one task at a time
+
+- Whilst your R session is running, it can't do anything else. 
+
+- This is called *synchronous* *programming*
+
+---
+
+# Example: A simple function
+
+Here we have a simple function, that performs linear regression on two variables within the movies data set. 
+
+```{r}
+library("ggplot2movies")
+data(movies, package = "ggplot2movies")
+
+display = function(){
+  Sys.sleep(5)
+  fit = lm(rating ~ year,data = movies)
+  return(fit)
+}
+```
+
+Notice the `Sys.sleep(5)`!!
+
+---
+
+# Example: A simple function
+
+```{r, message = FALSE}
+library("tictoc")
+
+tic()
+display()
+toc()
+```
+
+Whilst this function is running, we cannot run any other code, i.e. one task at a time! 
+
+---
+
+layout: true
+`r add_border(inverse=TRUE)`
+
+---
+
+class: center, middle, inverse
+background-image: url(assets/white_logo.png)
+
+# Demo
+
+---
+
+layout: true
+`r add_border(inverse=FALSE)`
+
+---
+
+# Introducing **future**
+
+- Function `future()` which runs R code in a separate process, leaving free the original process
+
+```{r}
+library("future")
+plan(multiprocess)
+
+tic()
+fit = future(display())
+toc()
+```
+
+- Now running `display()` takes close to 0 seconds. 
+
+- `plan(multiprocess)` tells **future** to use a separate R session on the same machine to run futures. This is essential. Only have to run this *once* per session.
+
+---
+
+# Introducing **future**
+
+- Whilst we now have a asynchronous way of running tasks, accessing the results of tasks is still synchronous
+
+```{r}
+tic()
+fit = future(display())
+value(fit)
+toc()
+```
+
+---
+
+layout: true
+`r add_border(inverse=TRUE)`
+
+---
+
+class: center, middle, inverse
+background-image: url(assets/white_logo.png)
+
+# Demo
+
+---
+
+layout: true
+`r add_border(inverse=FALSE)`
+
+---
+
+## Controlling How Futures are Resolved
+The future package implements the following types of futures:
+
+| Name            | OSes        | Description
+|:----------------|:------------|:-----------------------------------------------------
+| _synchronous:_  |             | _non-parallel:_
+| `sequential`    | all         | sequentially and in the current R process
+| `transparent`   | all         | as sequential w/ early signaling and w/out local (for debugging)
+| _asynchronous:_ |             | _parallel_:
+| `multiprocess`  | all         | multicore, if supported, otherwise multisession
+| `multisession`  | all         | background R sessions (on current machine)
+| `multicore`     | not Windows | forked R processes (on current machine)
+| `cluster`       | all         | external R sessions on current, local, and/or remote machines
+| `remote`        | all         | Simple access to remote R sessions
+
+---
+
+## A few useful things:
+
+### How many cores do I have available?
+
+```{r}
+availableCores()
+```
+
+### Is my future resolved yet?
+
+```{r}
+resolved(fit) 
+```
+
+---
+
+# Introducing **promises**
+
+```{r}
+library("promises")
+```
+
+- Lets us asynchronously access results of tasks
+
+- Whilst the task is running, a promise object represents the **eventual** result of the task
+
+- When the task has run, a promise object represents the result of the task
+
+- You cannot ask a promise if it's done
+
+- You cannot ask a promise for it's value
+
+---
+
+# Introducing **promises**
+
+Instead of extracting the value from a promise, we chain operations to the results. For instance, chaining *synchronously* using the **magrittr** pipe without futures/promises
+
+```{r}
+display() %>% 
+  print()
+```
+
+---
+
+# Introducing **promises**
+
+Now chaining *asynchronously* using the pipe from **promises**
+
+```{r}
+future(display()) %...>% 
+  print()
+```
+
+---
+
+layout: true
+`r add_border(inverse=TRUE)`
+
+---
+
+class: center, middle, inverse
+background-image: url(assets/white_logo.png)
+
+# Demo
+
+---
+
+## Exercise
+
+From this repository open `promises/demo_sync/app.R`.
+Run the app and notice that the button causes a synchronous generation of output.
+
+Use `future()` and `%...>%` to generate the output and access it asynchronously.
+
+**Hints:** 
+
+- Load the libraries then call `plan(multiprocess)`
+
+---
+
+layout: true
+`r add_border(inverse=FALSE)`
+
+---

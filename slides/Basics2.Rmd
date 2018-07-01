@@ -1,0 +1,414 @@
+---
+title: "Chapter 2: A shiny app"
+author: "Jumping Rivers"
+date: "`r Sys.Date()`"
+#output: revealjs::revealjs_presentation
+output: ioslides_presentation
+---
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Chapter 5 Slides}
+-->
+
+# Introduction
+## Introduction
+
+  * We've have relied on markdown for layout
+    * __Trust me__: use `flexdashboard` if you can!
+  * When we create a full shiny app, we have to worry about layout
+    * __Pro__: Finer control
+    * __Con__: Bracket madness!
+
+## Introduction: A shiny app
+
+  * `ui.R`
+  * `server.R`
+
+## The `ui.R` file
+
+  * `ui.R`: user interface. Similar for most apps
+
+```{r eval=TRUE, results="hide", cache=FALSE, message=FALSE}
+library("shiny")
+fluidPage(
+  titlePanel("Shiny happy people"), #title
+  ## Sidebar with a slider input for no. of points
+  sidebarLayout( 
+    sidebarPanel(
+      sliderInput("n", "Number of points:", min = 1, 
+                                  max = 50, value = 30)
+    ),
+    ## Show a plot of the generated distribution
+    mainPanel(plotOutput("scatter"))
+  )
+)
+```  
+
+## Basic `ui.R` layout
+
+```{r echo=FALSE, message=FALSE}
+library(jrShiny)
+layout(matrix(1:2, 1), width=c(1, 3))
+layout_show(2, text=c("Side bar", "Chart"), cex=1.5)
+text(0.1, 1, "Shiny Happy people")
+```
+
+## The `server.R` file
+
+  * `server.R`: calculation logic
+  * Complement to `ui.R`
+
+## The `server.R` file
+
+```{r eval = TRUE, results="hide", message=FALSE}
+library("shiny")
+# Function always has input & output
+function(input, output) {
+  # Expression that generates a plot. 
+  # A call to renderPlot indicates that:
+  #  1) It is "reactive" and therefore should 
+  #   re-execute automatically when inputs change
+  #  2) Its output type is a plot
+  output$scatter = renderPlot({plot(rnorm(input$n))})
+}
+``` 
+`output$scatter` links to the `plotOutput('scatter')`
+
+# Chapter 5: Exercise 1
+## Chapter 5: Exercise 1
+```{r eval=FALSE}
+vignette("chapter2", package="jrShiny")
+```
+
+# Running the app
+## Running the app
+
+  * Typically we have `ui.R` and `server.R` in a single directory.
+    * You can not have more than one app per directory.
+  * To run the app, use `runApp` 
+  * Assuming you have saved your files in a directory called `first_app`, then you can launch the app via
+
+    ```{r eval=FALSE}
+    library("shiny")
+    runApp("first_app")
+    ```
+
+## Output objects (page 19)
+
+  * The above app is very similar to the flexdashboard.
+  * However there is one new addition, `Output`
+  * In the above code, `plotOutput` takes the plot function and creates an image.
+    * `tableOutput` displays a table.
+    * `textOutput` outputs some text.
+
+## Output objects
+
+Output function | creates 
+----------------|---------
+`htmlOutput` | raw HTML
+`imageOutput` | image
+`plotOutput` | plot
+`tableOutput` | table
+`textOutput` | text
+`uiOutput` | raw HTML
+`verbatimTextOutput` | text
+
+
+## Layout (page 20)
+
+  * Shiny comes with tags.
+    * The `em` tag is for italics
+    ```{r results="hide"}
+    em("Some text")
+    ```
+  * Most of the markdown tags we have encountered have a corresponding HTML tag.
+  * See table in the notes for more details
+
+## The `fluidPage` function
+
+  * `fluidPage`  adjusts the display to the dimensions of the browser's window.
+  * The easiest interface is to have is to have the sidebar layout -- a sidebar panel and a
+  main panel:
+
+```{r results="hide", cache=FALSE}
+fluidPage(
+  titlePanel("Title panel"),# Title
+  ## Sidebar style
+  sidebarLayout(
+    sidebarPanel("The sidebar"),
+    mainPanel("Main panel")
+  )
+)
+``` 
+
+
+
+## `sidebarLayout`: swap sides
+
+```{r results="hide", cache=FALSE}
+sidebarLayout(position="right",
+  sidebarPanel("The sidebar"),
+  mainPanel("Main panel")
+)
+```
+
+## `sidebarLayout`
+
+To add content, just place it inside the `Panel` function.
+```{r results="hide"}
+sidebarLayout(
+  sidebarPanel("The sidebar", p("Choose an option")),
+  mainPanel("Main panel")
+)
+```   
+
+## `sidebarLayout`
+
+  * `sidebarLayout` uses Shiny's lower-level grid layout functions.
+    * Columns are defined by the `column`; rows by the `fluidRow` function.
+  * A page contains $12$ columns.
+    * Rows are created by the `fluidRow` function and include columns defined by the `column` function.
+  * Column widths: Bootstrap $12$-wide grid system
+
+
+## Layout
+
+```{r results="hide", cache=TRUE}
+ui = fluidPage(
+  titlePanel("I love movies"), #Title
+  fluidRow( # Define a row
+    column(4, # Two columns: width 4 & 8
+           wellPanel(
+             selectInput("movie_type", label = "Movie genre", 
+                         c("Romance", "Action", "Animation"))
+           )       
+    ),
+    column(8, plotOutput("scatter"))
+  )
+)
+```
+
+## Other layouts
+
+
+* __Tab Sets__ Similar to the tabbed panel in `flexdashboard` 
+* __Navbar Pages__ Similar to pages
+* __Dashboards__ Similar to the `flexdashboard`, but more powerful.
+
+
+## Tab Sets
+
+  * We might use a `tabsetPanel` to have multiple tabs within a single main panel.
+  * Use `tabsetPanel` to create the structure.
+  * Add `tabPanel` content to add additional tabs within the panel
+  
+## Tab Sets
+
+```{r,eval = FALSE}
+mainPanel(
+  tabsetPanel(type = "tabs",
+              tabPanel("Plot", plotOutput("plot")),
+              tabPanel("Summary", verbatimTextOutput("summary")),
+              tabPanel("Table", tableOutput("table"))
+  )
+)
+```
+
+## Navbar
+
+  * `tabsetPanel` can only contain `tabPanel` elements.
+  * `tabsetPanel` can only be used in the main panel of a side bar layout.
+  * Consequently we could have a single sidebar common to all tabs.
+  * Overall structure is constant.
+
+## Navbar
+
+  * With `navbarPage` we can have completely unique tabbed pages.
+  * Each page could have it's own layout
+  * One tab might have a side bar layout
+  * We could use tabsets within a navbar page
+  
+## Exercise
+
+  * Complete exercise Layouts 
+
+```{r, eval = FALSE}
+vignette("chapter2",package = "jrShiny")
+```
+
+## Dashboards
+
+  * The `shinydashboard` package is an extension to `shiny`
+  * Set of utility functions for creation of dashboards
+  
+## Dashboards
+
+  * Made up of a `dashboardPage`
+  * Contains a header, sidebar and body
+    + `dashboardHeader`
+    + `dashboardSidebar`
+    + `dashboardBody`
+
+## Dashboard Header
+
+  * A dashboard header can be blank
+  * Contain the name of your app
+  * Can contain `dropdownMenu`
+
+## Dashboard Sidebar
+
+  * Typically contains a `sideBarMenu` for navigation through the dashboard
+  * Can also contain other shiny inputs
+  * Could contain user information
+  * Search bars
+  
+## `sideBarMenu`
+
+  * A `sideBarMenu` consists of `menuItem`s
+  * `menuItem`s contain an id for a tabName
+  * Provides a link to the relevant tab within the dashboard body
+  * Can also include:
+    + icons
+    + badges
+    + sub menus
+    + link to an address
+  
+  
+## Dashboard Body
+
+  * A dashboard body uses `tabItems` to link to the side bar menu
+  * `tabItems` contains individual `tabItem` elements
+  * `tabItem` is identified by its tabName id matching the `menuItem` tabName id
+  * An individual `tabItem` is then a panel, similar to the main panel from the sidebar layout
+  
+## Dashboard Body
+
+  * `tabItem` content is often organised using `box`es
+  * similar to the `column` 12 grid system, default width = 6
+  * but can be composed of standard shiny elements too
+  
+## Exercise
+
+  * The dashboard exercise gives a startpoint for a dashboard
+  * vignette("chapter2",package = "jrShiny")
+  
+# Interactive graphics with shiny
+## Interactive graphics with shiny
+
+Select points and regions as well as zooming in/out of images.
+
+## Interactive graphics with shiny
+
+As before, we create a `ui` component
+
+```{r results="hide"}
+library("shiny")
+## Basic layout. Two regions.
+ui = basicPage(
+  plotOutput("scatter", click = "plot_click"),
+  verbatimTextOutput("info")
+)
+```  
+__Note__ `click`
+
+## Interactive graphics with shiny
+
+  
+* `click` captures where we clickThis will capture where we click on
+the plot.
+* In `server.R` we get the  variable `input$plot_click` ,
+
+## Interactive graphics with shiny
+```{r cache=TRUE}
+## Simulate data
+x = signif(rnorm(10), 3); y = signif(rnorm(10), 3);
+server = function(input, output) {
+  output$scatter = renderPlot(plot(x, y))
+  output$info = renderText({
+    paste0("x=", input$plot_click$x, "\ny=", input$plot_click$y)
+  })
+}
+```   
+
+# Exercise 3 and 4: Chapter 5
+
+# The session argument
+
+## session
+
+  * All of our shiny server functions so far have omitted the third optional argument `session`
+  
+```{r, eval = FALSE}
+server = function(input,output,session){}
+```
+
+## session
+
+  * This argument is an R environment containing information and functionality relating to the current session
+  * There are lots of things you can do with this object
+  * Such as run a function when the page is bookmarked by a user
+  * Run code when a session is restored by the user
+  
+## session 
+
+  * The things I most often find myself using it for are:
+    + Sending messages to the clients browser
+    + invalidating reactive expressions
+    
+## Invalidating reactive expressions
+
+  * Suppose you want to poll a database or data file for changes and update the graphics accordingly
+  * Or you want to cycle through samples within your data set at a regular time interval
+  * We could do this using `invalidateLater` and the `session` argument
+
+## Invalidating reactive expressions
+
+```{r}
+server = function(input,output,session)
+data = reactive({
+  invalidateLater(1000)
+  runif(10)
+})
+```
+
+## Invalidating reactive expressions
+
+  * What this is doing is invalidating the reactive expression every 1000 milliseconds
+  * Causes the code within the reactive context to be re-evaluated
+  * In this case that generates a set of random numbers every second. 
+  
+## `reactivePoll`
+
+  * If you were considering using the previous invalidation technique for pulling large amounts of data from a database and performing expensive rerendering it might be a bad idea
+  * `reactivePoll` might be better
+  * Used for polling data in a reactive way from a non-reactive source
+  * Use a cheap check function to see if the data has changed
+  * Only pull the updated data when it has
+
+# Deployment
+## Deployment: No shiny
+
+```{r echo=FALSE}
+knitr::include_graphics("graphics/email.jpg")
+```
+
+## Deployment: Shiny
+  
+  * Set up your own shiny [server](https://www.rstudio.com/products/shiny/shiny-server/)
+    * Open-source version and a paid version.
+  * Host your app in the cloud with `shinyapps.io`
+    * Free and paid [versions](http://shiny.rstudio.com/articles/shinyapps.html)
+  
+    ```{r eval=FALSE}
+    library("rsconnect")
+    deployApp("name_of_app.Rmd")
+    ``` 
+    
+## Deployment on Amazon
+
+  * You can try deploying an app on amazon if you like
+  * You can sign up for a free AWS account https://aws.amazon.com/
+  * You could either install shiny server yourself by following the instructions at rstudio
+  * Alternatively visit http://www.louisaslett.com/RStudio_AMI/ for a prepackaged version
+
+

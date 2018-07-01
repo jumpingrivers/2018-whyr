@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chapter 3: Advanced shiny basics</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+  <meta name="date" content="2018-06-30" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Chapter 3: Advanced shiny basics',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                      },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Jumping Rivers' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="Basics3_files/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="Basics3_files/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="Basics3_files/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="Basics3_files/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="Basics3_files/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="Basics3_files/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="Basics3_files/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="Basics3_files/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="Basics3_files/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="Basics3_files/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides>
+
+  <slide class="title-slide segue nobackground">
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">2018-06-30</p>
+          </hgroup>
+  </slide>
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Chapter 6 Slides}
+-->
+
+<slide class=""><hgroup><h2>Advanced shiny</h2></hgroup><article  id="advanced-shiny">
+
+<ul>
+<li>This section will focus on less detail</li>
+<li>More aimed at making you aware of some of the stuff available</li>
+</ul>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Dynamic User interfaces</h2></hgroup><article  id="dynamic-user-interfaces">
+
+</article></slide><slide class=""><hgroup><h2>Dynamic User interfaces</h2></hgroup><article  id="dynamic-user-interfaces-1">
+
+<ul>
+<li>Something that we have not looked at so far is adding a shiny element to the user interface itself</li>
+<li>In the same way that we can render graphical output based on user input reactive values we can render UI elements</li>
+<li>For example you want a different possible action dependant on the chosen data being continuous or discrete</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Dynamic User interfaces</h2></hgroup><article  id="dynamic-user-interfaces-2">
+
+<ul>
+<li>We can use reactive expressions to create any of the input widgets we have already seen</li>
+<li><code>renderUI</code> is the function to render the output html</li>
+<li><code>uiOutput</code> to include it within the page</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Dynamic User interfaces</h2></hgroup><article  id="dynamic-user-interfaces-3">
+
+<ul>
+<li><code>shinydashboard</code> also has functions for rendering UI elements</li>
+<li><code>renderMenu</code> for example</li>
+</ul>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Exercise dynamic user interfaces</h2></hgroup><article  id="exercise-dynamic-user-interfaces">
+
+</article></slide><slide class=""><hgroup><h2>Exercise dynamic user interfaces</h2></hgroup><article  id="exercise-dynamic-user-interfaces-1">
+
+<pre class = 'prettyprint lang-r'>vignette(&quot;chapter3&quot;,package = &quot;jrShiny&quot;)</pre>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>shinyjs</h2></hgroup><article  id="shinyjs">
+
+</article></slide><slide class=""><hgroup><h2>shinyjs</h2></hgroup><article  id="shinyjs-1">
+
+<ul>
+<li><code>shinyjs</code> is a package which allows you to run common useful Javascript functions</li>
+<li>Don’t need to know any Javascript</li>
+<li>Some particularly useful ones are:</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>shinyjs</h2></hgroup><article  id="shinyjs-2">
+
+<table class = 'rmdtable'>
+<col width="42.857143%" />
+<col width="57.142857%" />
+<tr class="header">
+<th align="left">Function</th>
+<th align="left">Description</th>
+</tr>
+<tr class="odd">
+<td align="left"><code>useShinyjs()</code></td>
+<td align="left">Necessary if you want to use other functions from the package</td>
+</tr>
+<tr class="even">
+<td align="left"><code>onevent</code></td>
+<td align="left">A more thorough event handler - monitor keyboard actions etc</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>alert</code></td>
+<td align="left">A handy wrapper for browser popups</td>
+</tr>
+<tr class="even">
+<td align="left"><code>runcodeUI</code></td>
+<td align="left">Allow you to run R code live in an app</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>runcodeServer</code></td>
+<td align="left">Needed with <code>runcodeUI</code></td>
+</tr>
+</table>
+
+</article></slide><slide class=""><hgroup><h2>shinyjs</h2></hgroup><article  id="shinyjs-3">
+
+<p><a href='https://daattali.com/shiny/shinyjs-demo/' title=''>https://daattali.com/shiny/shinyjs-demo/</a></p>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Tags</h2></hgroup><article  id="tags">
+
+</article></slide><slide class=""><hgroup><h2>shiny tags</h2></hgroup><article  id="shiny-tags">
+
+<ul>
+<li>If you are familiar with any HTML, CSS or Javascript you can use shiny tags to fully customise your apps</li>
+<li><code>tags</code> is a collection of 110 functions for creating HTML tags</li>
+<li><code>h1(Header)</code> creates `
+
+<h1>
+
+Header
+
+</h1></li>
+<li>Can use these tags as if writing a webpage</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>shiny tags</h2></hgroup><article  id="shiny-tags-1">
+
+<ul>
+<li>Through tags we can add bespoke CSS and Javascript code to our app</li>
+<li>Use the <code>head</code>, <code>style</code> and <code>script</code> tags</li>
+<li>Visit <a href='http://www.w3schools.com/' title=''>http://www.w3schools.com/</a> if you want to learn these as a good starting point</li>
+</ul>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Exercise: tags</h2></hgroup><article  id="exercise-tags">
+
+</article></slide><slide class=""><hgroup><h2>Exercise</h2></hgroup><article  id="exercise">
+
+<p>The final exercise document gives you some example code for including a customised hover popup function for value boxes in a shiny dashboard.</p>
+
+<p>We won’t get into learning CSS and javascript here</p>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Linking charts together</h2></hgroup><article  id="linking-charts-together">
+
+</article></slide><slide class=""><hgroup><h2>Linking charts</h2></hgroup><article  id="linking-charts">
+
+<ul>
+<li>The JavaScript based graphics also have input bindings on the plot</li>
+<li>For example <code>dygraphs</code> timeseries has an input binding for the date window</li>
+<li>Leaflet has input bindings for clicking points and polygons</li>
+<li>You can treat these as any other reactive value, and hence use them to link charts together</li>
+<li><a href='./R/temp/tmp.R' title=''>e.g</a></li>
+</ul>
+
+<!-- ## googleVis -->
+
+<!--   * I came across a package called googleVis a few months ago -->
+
+<!--   * Motion Chart https://cran.r-project.org/web/packages/googleVis/vignettes/googleVis_examples.html --></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

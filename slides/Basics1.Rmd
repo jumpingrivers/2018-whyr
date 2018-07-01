@@ -1,0 +1,380 @@
+---
+title: "Chapter 1: shiny"
+author: "Jumping Rivers"
+date: "`r Sys.Date()`"
+output: ioslides_presentation
+runtime: shiny
+---
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Chapter 4 Slides}
+-->
+
+# Setup
+## Setup
+
+Please do the following:
+
+Basics:
+
+```{r eval=FALSE}
+install.packages("drat")
+drat::addRepo("jr-packages")
+install.packages("jrShiny")
+
+# start a new Rstudio project (optional)
+jrShiny::create_project()
+```
+
+You should see two new directories `exercises` and `original`. We will work on `exercises` leaving original as a reference.
+
+Advanced:
+
+Download or clone the repostiory - 
+
+```{r echo=FALSE, message=FALSE}
+library(shiny)
+data(movies, package="jrShiny")
+```
+
+# Shiny
+## Shiny
+
+* [Shiny](https://goo.gl/tzZs3T) is a R package that provides a web 
+application framework for R
+* Fast and simple development for interactive graphics.
+* See also
+* http://shiny.rstudio.com/gallery
+* http://www.showmeshiny.com/
+* http://shiny.rstudio.com/tutorial/
+* http://shiny.rstudio.com/articles/
+* Every shiny app is maintained by a computer running R
+
+## Shiny
+
+* Provides functions which allow automatic bindings between input and output
+* Build interactive web applications using R
+* Gives an interface between R programming and JavaScript/html output
+* No knowledge of JavaScript/html required
+
+## First app: `Rmd`
+
+```
+---
+title: "First app"
+runtime: shiny
+---
+```
+
+# Input: control widgets
+## Input: control widgets
+
+```{r echo=FALSE}
+selectInput("movie_type1", # unique id 
+            label = "Movie genre", # Text for web
+            c("Romance", "Action", "Animation"))
+checkboxGroupInput("id1", label = "Checkbox", c("Romance", "Action", "Animation"))
+```
+Other [Widgets](http://shiny.rstudio.com/gallery/widget-gallery.html) Gallery
+
+## Widgets
+This
+```{r results="hide"}
+selectInput("movie_type", # unique id 
+            label = "Movie genre", # Text for web
+            c("Romance", "Action", "Animation"))
+```
+gives
+```
+<div class="form-group shiny-input-container">
+<label class="control-label" for="movie_type">Movie genre</label>
+<div>
+<select id="movie_type">
+<option value="Romance" selected>Romance</option>
+<option value="Action">Action</option>
+<option value="Animation">Animation</option></select>
+<script type="application/json" data-for="movie_type" 
+data-nonempty="">{}</script>
+</div>
+</div>
+```
+# Exercise 2
+## Exercise 2
+
+```{r message=FALSE, eval=FALSE}
+vignette("chapter1", package="jrShiny")
+```
+
+# Rendered outputs
+## Rendered outputs
+
+* Use the values in the shiny widgets to dynamically change
+plots and tables.
+* When we create a shiny widget, the value of the widget is
+bound to `input$inputId`
+* This object is a _reactive_ value
+
+> What code will the server run? Code that builds something out of `reactive` values
+
+> When will the code run? When the _reactive_ value changes.
+
+
+# Exercise 3
+## Exercise 3 
+
+```{r message=FALSE, eval=FALSE}
+vignette("chapter1", package="jrShiny")
+```
+## Rendered output
+
+* Rendered (outputs) respond whenever a `reactive` value changes. 
+* For example, the scatter plot when we were exploring the occurrence of names.
+
+Function | Output type
+---------|------------
+`renderPlot` | R graphics output
+`renderPrint` | printed output
+`renderTable`	| Data frame, matrix
+`renderText` | Character vectors
+
+## Example: movies
+
+```{r eval=FALSE}
+renderText({
+  type = movies[,input$movie_type] == 1
+  nrow(movies[type,])
+})
+```
+Or
+```{r eval=FALSE}
+renderPlot({
+  type = movies[,input$movie_type] == 1
+  hist(movies[type,]$length)
+})
+```
+
+# Exercise 4
+## Exercise 4
+
+```{r message=FALSE, eval=FALSE}
+vignette("chapter1", package="jrShiny")
+```
+
+# Reactive programming
+## Reactive programming
+
+* __render__ functions == reactive programming
+* Standard R session
+
+```{r}
+x = 1
+print(x)
+x = 2 ## The print statement above is not updated.
+```
+
+* Shiny gives the illustration that `print(x)` is updated.
+
+## Reactive programming
+
+*   A naive way of doing this is to constantly check if any objects have changed.
+* Doesn't scale 
+* shiny just checks key objects. If these objects have changed, the necessary changes
+are propagated through.
+* When we include `input$X` within a `render`
+- indicates that we should rerun render when `input$X` changes
+
+> A reactive expression is an R expression that uses widget input and returns a
+value.
+
+## Problem
+
+This is inefficient
+
+```{r eval=FALSE}
+renderText({
+  type = movies[,input$movie_type] == 1
+  nrow(movies[type,])
+})
+renderPlot({
+  type = movies[,input$movie_type] == 1
+  hist(movies[type,]$length)
+})
+```
+
+## Solution: `reactive`
+
+```{r eval=FALSE}
+sub_movies  = reactive(movies[movies[input$movie_type]==1,])
+```
+Or 
+```{r eval=FALSE}
+sub_movies = reactive({
+  type = movies[,input$movie_type] == 1
+  movies[type,]
+})
+```
+Gives
+
+```{r eval=FALSE}
+renderText(nrow(sub_movies()))
+renderPlot(hist(sub_movies()$length))
+```
+
+# Exercise 5
+## Exercise 5
+
+```{r message=FALSE, eval=FALSE}
+vignette("chapter1", package="jrShiny")
+```
+
+# `eventReactive`
+## Problem
+
+```{r eval=FALSE}
+selectInput("movie_genre", label = "Movie genre", 
+            c("Romance", "Action", "Animation"))
+actionButton("plot", "Plot it now!!")
+
+sub_movies  = reactive(movies[movies[input$movie_genre]==1,])
+#??
+```
+
+## Solution: `actionButton` and `actionLink`
+
+```{r echo=TRUE}
+selectInput("movie_genre", label = "Movie genre", 
+            c("Romance", "Action", "Animation"))
+actionButton("plot", "Plot it now!!")
+
+sub_movies1 = eventReactive(input$plot,{
+  type = movies[,input$movie_genre] == 1
+  movies[type,]
+})
+renderPlot(hist(sub_movies1()$length))
+```
+
+# Exercise 6
+## Exercise 6
+
+```{r message=FALSE, eval=FALSE}
+vignette("chapter1", package="jrShiny")
+```
+
+# The `observeEvent` function
+## Problem
+
+```{r}
+actionButton("romance", "Romance")
+actionButton("action", "Action")
+```
+
+* The `eventReactive` approach doesn't work. 
+
+## Solution: `reactiveValues` and `observeEvent`
+
+```{r eval=FALSE}
+rvs = reactiveValues(data=movies)
+```
+
+Next we monitor the buttons for changes, and update `rvs` as needed
+
+```{r eval=FALSE}
+observeEvent(input$romance, {
+  rvs$data = {
+    type = movies[,input$movie_type] == 1
+    movies[type,]
+  }
+})
+observeEvent(input$action, {
+  rvs$data = {
+    type = movies[,input$movie_type] == 1
+    movies[type,]
+  }
+})
+renderPlot(hist(rvs$data[, "length"]))
+```
+
+# Exercise 7
+## Exercise 7
+
+```{r message=FALSE, eval=FALSE}
+vignette("chapter1", package="jrShiny")
+```
+
+# The `isolate` function
+## Problem
+
+```{r eval=FALSE}
+sliderInput("n", "Sample size", 10, 500, 100)
+actionButton("romance", "Romance")
+actionButton("action", "Action")
+```
+
+
+```{r eval=FALSE}
+observeEvent(input$romance, {
+  m =  movies[movies[input$movie_type]==1,]
+  rows = sample(1:nrow(m), input$n)
+  rvs$data = movies[rows,]
+})
+# Similar for Action
+renderPlot(hist(rvs$data[, "length"], 
+                main=paste("Sample size:", input$n)))
+```
+
+## Problem
+
+```{r shiny1, echo=FALSE}
+sliderInput("n_iso", "Sample size", 10, 500, 100)
+actionButton("romance_iso", "Romance")
+actionButton("action_iso", "Action")
+rvs = reactiveValues(data=movies)
+observeEvent(input$romance_iso, {
+  m =  movies[movies[,"Romance"]==1,]
+  rows = sample(1:nrow(m), input$n_iso)
+  rvs$data = m[rows,]
+})
+
+observeEvent(input$action_iso, {
+  m =  movies[movies[,"Action"]==1,]
+  rows = sample(1:nrow(m), input$n_iso)
+  rvs$data = m[rows,]
+})
+renderPlot(hist(rvs$data[, "length"], 
+                main=paste("Sample size:", input$n_iso)))
+```
+
+## Solution: `isolate`
+
+```{r eval=FALSE}
+renderPlot(hist(rvs$data[, "length"], 
+                main=paste("Sample size:", isolate(input$n))))
+```
+
+## Solution: `isolate`
+
+```{r echo=FALSE}
+sliderInput("n_iso1", "Sample size", 10, 500, 100)
+actionButton("romance_iso1", "Romance")
+actionButton("action_iso1", "Action")
+rvs = reactiveValues(data=movies)
+observeEvent(input$romance_iso1, {
+  m =  movies[movies[,"Romance"]==1,]
+  rows = sample(1:nrow(m), input$n_iso1)
+  rvs$data = m[rows,]
+})
+
+observeEvent(input$action_iso1, {
+  m =  movies[movies[,"Action"]==1,]
+  rows = sample(1:nrow(m), input$n_iso1)
+  rvs$data = m[rows,]
+})
+
+renderPlot(hist(rvs$data[, "length"], 
+                main=paste("Sample size:", isolate(input$n_iso1))))
+```
+
+## Flexdashboard
+
+* See if you can recreate [this](https://bookdown.org/csgillespie/shiny_components_reactive/)
+* The basic structure has been started for you in `chapter1/flexstarter.Rmd`

@@ -1,0 +1,106 @@
+---
+title: "Chapter 3: Advanced shiny basics"
+author: "Jumping Rivers"
+date: "`r Sys.Date()`"
+#output: revealjs::revealjs_presentation
+output: 
+  ioslides_presentation: 
+    self_contained: no
+---
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Chapter 6 Slides}
+-->
+
+## Advanced shiny
+
+  * This section will focus on less detail
+  * More aimed at making you aware of some of the stuff available
+  
+# Dynamic User interfaces
+## Dynamic User interfaces
+
+  * Something that we have not looked at so far is adding a shiny element to the user interface itself
+  * In the same way that we can render graphical output based on user input reactive values we can render UI elements
+  * For example you want a different possible action dependant on the chosen data being continuous or discrete
+  
+## Dynamic User interfaces
+
+  * We can use reactive expressions to create any of the input widgets we have already seen
+  * `renderUI` is the function to render the output html
+  * `uiOutput` to include it within the page
+  
+## Dynamic User interfaces
+
+  * `shinydashboard` also has functions for rendering UI elements
+  * `renderMenu` for example
+  
+# Exercise dynamic user interfaces
+## Exercise dynamic user interfaces
+
+```{r,eval = FALSE}
+vignette("chapter3",package = "jrShiny")
+```
+
+# shinyjs
+
+## shinyjs
+
+  * `shinyjs` is a package which allows you to run common useful Javascript functions
+  * Don't need to know any Javascript
+  * Some particularly useful ones are:
+  
+## shinyjs
+
+Function | Description
+---------|------------
+`useShinyjs()` | Necessary if you want to use other functions from the package
+`onevent` | A more thorough event handler - monitor keyboard actions etc
+`alert` | A handy wrapper for browser popups
+`runcodeUI` | Allow you to run R code live in an app
+`runcodeServer` | Needed with `runcodeUI`
+
+## shinyjs
+
+https://daattali.com/shiny/shinyjs-demo/
+
+# Tags
+## shiny tags
+
+  * If you are familiar with any HTML, CSS or Javascript you can use shiny tags to fully customise your apps
+  * `tags` is a collection of 110 functions for creating HTML tags
+  * `h1(Header)` creates `<h1> Header </h1>
+  * Can use these tags as if writing a webpage
+  
+## shiny tags
+
+  * Through tags we can add bespoke CSS and Javascript code to our app
+  * Use the `head`, `style` and `script` tags
+  * Visit http://www.w3schools.com/ if you want to learn these as a good starting point
+  
+# Exercise: tags
+
+## Exercise
+
+The final exercise document gives you some example code for including a customised hover popup function for value boxes in a shiny dashboard. 
+
+We won't get into learning CSS and javascript here
+
+# Linking charts together
+
+## Linking charts
+
+  * The JavaScript based graphics also have input bindings on the plot
+  * For example `dygraphs` timeseries has an input binding for the date window
+  * Leaflet has input bindings for clicking points and polygons
+  * You can treat these as any other reactive value, and hence use them to link charts together
+  * [e.g](./R/temp/tmp.R)
+
+<!-- ## googleVis -->
+
+<!--   * I came across a package called googleVis a few months ago -->
+<!--   * Motion Chart https://cran.r-project.org/web/packages/googleVis/vignettes/googleVis_examples.html -->
+  
+
+
+

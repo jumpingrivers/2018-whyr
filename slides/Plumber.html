@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Plumber</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Roman Popat (\[\\@rmnppt](https://twitter.com/rmnppt))" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Plumber
+## How to integrate R with other technologies
+### Roman Popat (<span class="citation">[\\@rmnppt]</span>(<a href="https://twitter.com/rmnppt" class="uri">https://twitter.com/rmnppt</a>))
+
+---
+
+
+
+
+
+layout: false
+layout: true
+
+      &lt;div class="jr-header-inverse"&gt;
+        &lt;img class="logo" src="assets/white_logo_full.png"/&gt;
+        &lt;span class="social"&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;img src="assets/twitter.gif"/&gt;&lt;/td&gt;&lt;td&gt; @jumping_uk&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/span&gt;
+      &lt;/div&gt;
+      
+&lt;div class="jr-footer-inverse"&gt;&lt;span&gt;&amp;copy; 2018 Jumping Rivers (jumpingrivers.com)&lt;/span&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;
+
+---
+
+# Expose R to other people/things
+
+.pull-left[
+
+## Who needs plumber?
+
+  - Reporting, Automated Reporting
+  
+  - Publishing, Web Publishing
+  
+  - Building systems/software
+
+]
+
+.pull-right[
+
+  ![friends](assets/friends.jpg)
+
+]
+
+---
+
+# Expose R to other people/things
+
+.pull-left[
+
+## Who needs plumber?
+
+  - ~~Reporting, Automated Reporting~~
+  
+  - ~~Publishing, Web Publishing~~
+  
+  - Building systems/software
+]
+
+.pull-right[
+
+  ![friends](assets/friends.jpg)
+
+]
+
+---
+
+# Expose R to other people/things
+
+
+.pull-left[
+
+- Web/Dashboard integrations
+  
+- App developers
+
+- DataBase Developers
+  
+- Data Scientists
+  
+- Other back-end systems
+
+- And so on...
+
+]
+
+.pull-right[
+
+  ![friends](assets/friends.jpg)
+
+]
+
+---
+
+layout: true
+layout: true
+
+      &lt;div class="jr-header-inverse"&gt;
+        &lt;img class="logo" src="assets/white_logo_full.png"/&gt;
+        &lt;span class="social"&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;img src="assets/twitter.gif"/&gt;&lt;/td&gt;&lt;td&gt; @jumping_uk&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/span&gt;
+      &lt;/div&gt;
+      
+&lt;div class="jr-footer-inverse"&gt;&lt;span&gt;&amp;copy; 2018 Jumping Rivers (jumpingrivers.com)&lt;/span&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;
+
+---
+
+# One option: A REST API
+
+`www.some-address.de/some-functionality?with-parameters`
+
+Examples:
+
+`https://duckduckgo.com/?q=hamburg+R+user+group`
+
+`https://www.imdb.com/find?q=batman&amp;s=tt`
+
+---
+
+# `plumber` to the rescue
+
+  - Creates a REST API
+  
+  - No specialist knowledge required to get started
+  
+  - Very easy to adapt existing code
+  
+  - Great documentation: https://www.rplumber.io/
+  
+Follow development:
+
+Jeff Allen: https://github.com/trestletech/plumber
+
+Rstudio: https://github.com/rstudio/plumber
+
+---
+
+# 3 easy steps
+
+  - 1: Write function
+  
+  
+  ```r
+  silly = function(stuff) {
+    print(stuff)
+  }
+  ```
+
+---
+
+# 3 easy steps
+
+  - 2: Add special comments
+
+  
+  ```r
+  library(plumber)
+  
+  @get /silly
+  silly = function(stuff) {
+    print(stuff)
+  }
+  ```
+
+---
+
+# 3 easy steps
+
+  - 3: Serve
+
+
+```r
+  library(plumber)
+  
+  p = plumb(dir = "api")
+  p$run(port = 8000)
+```
+
+---
+
+class: center, middle inverse
+
+# Your Turn
+  ## github.com/rmnppt/plumber-tutorial
+
+---
+
+# My use cases
+
+  - Providing forecasting interface for disease outbreak detection.
+  
+  - Providing recommendation algorithm for business.
+  
+  - Exposing SEO algorithms for marketing developers.
+
+---
+
+# Deployment Basic
+
+  - Start with built in digital ocean method*
+  
+  - Entry point $5 per month
+  
+  - `plumber::do_deploy_api`
+
+&lt;img src="assets/rage1.jpg" width="200px" style="display: block; margin: auto;" /&gt;
+
+.footnote[[*] Plumber Docs https://www.rplumber.io/docs/hosting.html]
+
+---
+
+# Deployment Advanced
+
+  - install web server manually and configure resources (Docker Compose or pm2)*
+  
+  - multiple R processes running concurrently
+  
+  - harder to do but more scaleable
+
+&lt;img src="assets/rage2.jpg" width="250px" style="display: block; margin: auto;" /&gt;
+
+.footnote[[*] Plumber Docs https://www.rplumber.io/docs/hosting.html]
+
+---
+  
+# Deployment Experimental
+
+  - Configure app engine on Google Cloud Compute*
+  
+  - Harder, less support but most scaleable and fully managed
+
+&lt;img src="assets/rage3.png" width="300px" style="display: block; margin: auto;" /&gt;
+
+.footnote[[*] Mark Edmonson https://github.com/MarkEdmondson1234/serverless-R-API-appengine]
+
+---
+
+class: center, middle inverse
+
+# Accessing an API with `library(httr)`
+
+---
+
+# Getting bitcoin price
+
+
+```r
+url = "https://api.gdax.com/products/BTC-GBP/candles"
+results = httr::GET(url)
+httr::content(results)[[1]]
+#&gt; [[1]]
+#&gt; [1] 1530360780
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 4865
+#&gt; 
+#&gt; [[3]]
+#&gt; [1] 4865
+#&gt; 
+#&gt; [[4]]
+#&gt; [1] 4865
+#&gt; 
+#&gt; [[5]]
+#&gt; [1] 4865
+#&gt; 
+#&gt; [[6]]
+#&gt; [1] 0.04
+```
+---
+
+class: center, middle inverse
+
+# Your Turn
+
+---
+
+# Task
+
+1. Browse the internet for an API that you would like to use. 
+    - app.swaggerhub.com
+    - www.programmableweb.com
+
+2. Use `httr::GET()` and `httr::content()` to make some calls.
+
+---
+
+# Appendix
+
+  - Who is https://www.blockspring.com/ ?
+  
+  - How could you forget! [R Studio Connect](https://www.rstudio.com/products/connect/)
+  
+  - What about [Apple Core ML](https://developer.apple.com/documentation/coreml) or [Google ML Kit](https://developers.google.com/ml-kit/)
+
+ - Others including (Microsoft/Azure, H2o Steam, Fiery, AWS/Lambda)
+
+---
+
+# Get started
+
+  - github.com/rmnppt/plumber-tutorial
+  
+  - www.rplumber.io
+  
+---
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
